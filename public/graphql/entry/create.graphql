@@ -4,9 +4,9 @@ mutation (
   $parent_entry_id: String
   $group_id: String
 ) {
-  entry: model_create(
-    model: {
-      model_schema_name: "modules/community/entry"
+  entry: record_create(
+    record: {
+      table: "modules/community/entry"
       properties: [
         { name: "creator", value: $creator }
         { name: "entry_type", value: $entry_type }
