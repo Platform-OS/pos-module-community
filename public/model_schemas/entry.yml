@@ -1,0 +1,6 @@
+name: entry
+properties:
+  - name: creator
+  - name: entry_type
+  - name: parent_entry_id
+  - name: group_id

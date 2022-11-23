@@ -1,0 +1,11 @@
+{
+  "name": "Community",
+  "machine_name": "community",
+  "type": "module",
+  "version": "0.0.0",
+  "dependencies": {
+    "core": "^1.0.0",
+    "user": "^1.0.0",
+    "permission": "^1.0.0"
+  }
+}

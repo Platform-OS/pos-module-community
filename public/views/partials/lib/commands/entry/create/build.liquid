@@ -1,0 +1,11 @@
+{% parse_json object %}
+  {
+    "creator": {{ creator | json }},
+    "entry_type": {{ entry_type | json }},
+    "parent_entry_id": {{ parent_entry_id | json }},
+    "group_id": {{ group_id | json }},
+    "entry_payload": {{ entry_payload }}
+  }
+{% endparse_json %}
+
+{% return object %}

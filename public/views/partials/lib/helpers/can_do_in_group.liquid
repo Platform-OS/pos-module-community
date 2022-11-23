@@ -1,0 +1,20 @@
+{% comment %}
+  Checks if the requester can do domething on the given entiry in the given group.
+
+  Params:
+    - requester Object
+      The requester must has a string array field called 'permissions'
+    - entity Object
+    - do String
+    - group_id String
+{% endcomment %}
+{% liquid
+  if has_access_to_all
+    return true
+  endif
+  if requester.permissions_in_group contains do
+    return true
+  endif
+
+  return false
+%}

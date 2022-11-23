@@ -1,0 +1,34 @@
+{%- comment -%}
+  Creates an entry and fires hook_community_entry_create hook.
+
+  Params:
+    - creator: String
+      The creator user ID.
+    - entry_type: String
+    - parent_entry_id: String (optional)
+    - group_id: String (optional)
+    - entry_payload: Object (optional)
+{%- endcomment -%}
+{% liquid
+  unless entry_payload
+    assign entry_payload = '{}' | parse_json
+  endunless
+  function object = 'modules/community/lib/commands/entry/create/build', creator: creator, entry_type: entry_type, parent_entry_id: parent_entry_id, group_id: group_id, entry_payload: entry_payload
+  function object = 'modules/community/lib/commands/entry/create/check', object: object
+
+  if object.valid
+    graphql entry = 'modules/community/entry/create', args: object
+    log entry
+    if entry.entry.id
+      hash_assign object['created_entry'] = entry.entry
+      assign params = '{}' | parse_json | hash_merge: created_entry: entry.entry, entry_payload: entry_payload
+      function results = 'modules/core/lib/commands/hook/fire', hook: 'community_entry_create', params: params, merge_to_object: true
+      hash_assign object['hook_results'] = results
+    else
+      hash_assign object['valid'] = false
+      hash_assign object['errors'] = entry.errors
+    endif
+  endif
+
+  return object
+%}

@@ -1,0 +1,39 @@
+{% comment %}
+  Checks if the requester can do domething on the given entiry.
+
+  Params:
+    - requester Object
+      The requester must has a string array field called 'permissions'
+    - entity Object
+    - do String
+    - additional_params Object
+      - group_id String (optional)
+        Optinal key if the access check should be inside a group.
+{% endcomment %}
+{% liquid
+  # example: do: 'community.post.edit' -> 'community.post.edit.all'
+  if has_permission_to_do_all
+    return true
+  endif
+  if no_group_id
+    # unless requester.permissions contains do
+    if no_permission_to_do
+      return false
+    endif
+    if no_entity
+      if requester.permissions contains do
+        return true
+      endif
+      return false
+    endif
+    if entity.creator_id == requester.id
+      return true
+    endif
+  endif
+  if additional_params['group_id']
+    function can = 'modules/community/lib/helpers/can_do_in_group', requester: requester, entity: entity, do: do, group_id: additional_params['group_id']
+    return can
+  endif
+
+  return false
+%}
