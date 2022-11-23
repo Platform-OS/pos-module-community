@@ -1,0 +1,29 @@
+{%- comment -%}
+  Creates an entry and fires hook_community_entry_create hook.
+
+  Params:
+    - entry_id: String
+      The creator user ID.
+    - additional_params: Object (optional)
+{%- endcomment -%}
+{% liquid
+  unless additional_params
+    assign additional_params = '{}' | parse_json
+  endunless
+  function object = 'modules/community/lib/commands/entry/delete/build', entry_id: entry_id, additional_params: additional_params
+  function object = 'modules/community/lib/commands/entry/delete/check', object: object
+
+  if object.valid
+    graphql entry = 'modules/community/entry/delete', args: object
+    if entry.delete.id
+      assign params = '{}' | parse_json | hash_merge: entry_id: entry_id, additional_params: additional_params
+      function results = 'modules/core/lib/commands/hook/fire', hook: 'community_entry_delete', params: params, merge_to_object: true
+      hash_assign object['hook_results'] = results
+    else
+      hash_assign object['valid'] = false
+      hash_assign object['errors'] = entry.errors
+    endif
+  endif
+
+  return object
+%}
