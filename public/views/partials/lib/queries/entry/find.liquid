@@ -1,0 +1,28 @@
+{% comment %}
+  Loads an enty's data.
+
+  Params:
+    - id: string
+    - additional_data: object (optional)
+      This object will be sent to hook_community_entry_load.
+{% endcomment %}
+{% liquid
+  unless additional_data
+    assign additional_data = '{}' | parse_json
+  endunless
+
+  graphql entries = 'modules/community/entry/search', id: id, page: 1, per_page: 1
+  if entries.errors
+    return entries
+  endif
+
+  assign entry = entries.entries.results.first
+
+  if entry
+    assign params = '{}' | parse_json | hash_merge: entry: entry, additional_data: additional_data
+    function results = 'modules/core/lib/commands/hook/fire', hook: 'community_entry_load', params: params, merge_to_object: true
+    hash_assign entry['hook_results'] = results
+  endif
+
+  return entry
+%}

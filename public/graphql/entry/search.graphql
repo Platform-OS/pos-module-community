@@ -1,0 +1,42 @@
+query (
+  $page: Int!
+  $per_page: Int!
+  $id: ID
+  $creator: String
+  $entry_type: String
+  $parent_entry_id: String
+  $group_id: String
+) {
+  entries: records(
+    page: $page
+    per_page: $per_page
+    filter: {
+      id: { value: $id }
+      table: { value: "modules/community/entry" }
+      properties: [
+        { name: "creator", value: $creator }
+        { name: "entry_type", value: $entry_type }
+        { name: "parent_entry_id", value: $parent_entry_id }
+        { name: "group_id", value: $group_id }
+      ]
+    }
+  ) {
+    current_page
+    has_next_page
+    has_previous_page
+    per_page
+    total_entries
+    total_pages
+
+    results {
+      id
+      created_at
+      type: table
+
+      creator: property(name: "creator")
+      entry_type: property(name: "entry_type")
+      parent_entry_id: property(name: "parent_entry_id")
+      group_id: property(name: "group_id")
+    }
+  }
+}
