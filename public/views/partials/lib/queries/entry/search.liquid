@@ -1,0 +1,47 @@
+{% comment %}
+  Loads an entries.
+
+  Params:
+    - current_page: int
+      default: 1
+    - per_page: int
+      default: 20
+    - entry_type string (optional)
+    - creator string (option)
+      the ID of the creator user.
+    - parent_entry_id string (optional)
+    - group_id string (optional)
+    - load_data: boolean (optional)
+      default: false
+    - children_limit int (optional)
+      maximum number of loaded children, default: 100
+    - additional_data: object (optional)
+      This object will be sent to hook_community_entry_load.
+{% endcomment %}
+{% liquid
+  unless additional_data
+    assign additional_data = '{}' | parse_json
+  endunless
+  if load_data == nil
+    assign load_data = false
+  endif
+  assign children_limit = children_limit | default: 100
+  assign current_page = current_page | default: 1
+  assign per_page = per_page | default: 20
+
+  graphql entries = 'modules/community/entry/search', id: id, page: current_page, per_page: per_page, entry_type: entry_type, creator: creator, parent_entry_id: parent_entry_id, group_id: group_id
+  if entries.errors
+    return entries
+  endif
+
+  unless load_data
+    return entries.entries 
+  endunless
+
+  for entry in entries.entries.results
+    function loaded_entry = 'modules/community/lib/queries/entry/find', id: entry.id, children_limit: children_limit, additional_data: additional_data
+    hash_assign entries.entries.results[forloop.index0] = loaded_entry
+  endfor
+
+  return entries.entries
+%}
