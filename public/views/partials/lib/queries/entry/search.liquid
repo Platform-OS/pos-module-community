@@ -17,6 +17,7 @@
       maximum number of loaded children, default: 100
     - additional_data: object (optional)
       This object will be sent to hook_community_entry_load.
+    - sort RecordsSortInput (optional)
 {% endcomment %}
 {% liquid
   unless additional_data
@@ -29,7 +30,7 @@
   assign current_page = current_page | default: 1
   assign per_page = per_page | default: 20
 
-  graphql entries = 'modules/community/entry/search', id: id, page: current_page, per_page: per_page, entry_type: entry_type, creator: creator, parent_entry_id: parent_entry_id, group_id: group_id
+  graphql entries = 'modules/community/entry/search', id: id, page: current_page, per_page: per_page, entry_type: entry_type, creator: creator, parent_entry_id: parent_entry_id, group_id: group_id, sort: sort
   if entries.errors
     return entries
   endif

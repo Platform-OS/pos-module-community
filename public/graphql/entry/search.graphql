@@ -6,6 +6,7 @@ query (
   $entry_type: String
   $parent_entry_id: String
   $group_id: String
+  $sort: [RecordsSortInput!]
 ) {
   entries: records(
     page: $page
@@ -20,6 +21,7 @@ query (
         { name: "group_id", value: $group_id }
       ]
     }
+    sort: $sort
   ) {
     current_page
     has_next_page
